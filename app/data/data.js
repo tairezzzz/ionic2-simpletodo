@@ -1,33 +1,28 @@
-import {Storage, SqlStorage} from 'ionic/ionic';
+import {Platform, Storage, SqlStorage} from 'ionic/ionic';
 import {Injectable} from 'angular2/core';
 
 @Injectable()
 
 export class DataService{
-  constructor(){
-
-    this.storage = new Storage(SqlStorage, {name: 'todoapp'});
-    this.data = null;
-
-    this.storage.get('todoapp').then((todos) =>{
-      this.data = JSON.parse(todos);
-      console.log(this.data);
-    })
+  constructor(platform: Platform){
+    this.platform = platform;
+    this.data = [];
+    this.platform.ready().then(()=>{
+      this.storage = new Storage(SqlStorage);
+    });
   }
 
   getData(){
-    return this.storage.get('todoapp');
+      return this.storage.query("SELECT * FROM todos");
   }
 
   save(item){
-    if(!this.data){
-      this.data = [item];
-      let newData = JSON.stringify(item);
-      this.storage.set('todoapp', newData);
-    } else {
-        this.data.push(item);
-        let newData = JSON.stringify(this.data);
-        this.storage.set('todoapp', newData);
-    }
+    this.platform.ready().then(()=>{
+      this.storage.query("INSERT INTO todos (title, description) VALUES ("+item.title+","+item.description+")").then((data)=>{
+        console.log(JSON.stringify(data.res));
+      }, (error)=>{
+        console.log("ERROR -> " + JSON.stringify(error.err));
+      });
+    });
   }
 }

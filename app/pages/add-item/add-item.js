@@ -5,10 +5,8 @@ import {Page, NavController, NavParams} from 'ionic/ionic';
 })
 export class AddItemPage {
   constructor(nav:NavController, navParams:NavParams) {
-
     this.nav = nav;
     this.navParams = navParams;
-
     this.title = "";
     this.description="";
   }
@@ -17,8 +15,7 @@ export class AddItemPage {
     let newItem{
       title: this.title;
       description: this.description;
-    }
-
+    };
     this.navParams.get('listPage').saveItem(newItem);
     this.nav.pop();
   }

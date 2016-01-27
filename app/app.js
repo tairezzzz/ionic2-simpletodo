@@ -1,4 +1,4 @@
-import {App, Platform} from 'ionic/ionic';
+import {App, Platform, Storage, SqlStorage} from 'ionic/ionic';
 import {ListPage} from './pages/list/list';
 import {DataService} from './data/data';
 
@@ -11,6 +11,8 @@ import {DataService} from './data/data';
 export class MyApp {
   constructor(platform: Platform) {
     this.rootPage = ListPage;
+    this.platform = platform;
+    this.initializeApp();
 
     platform.ready().then(() => {
       // The platform is now ready. Note: if this callback fails to fire, follow
@@ -28,5 +30,16 @@ export class MyApp {
       // good for dark backgrounds and light text:
       // StatusBar.setStyle(StatusBar.LIGHT_CONTENT)
     });
+  }
+
+  initializeApp(){
+    this.storage = new Storage(SqlStorage);
+    this.platform.ready().then(()=>{
+      this.storage.query("CREATE TABLE IF NOT EXISTS todos(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, description TEXT)").then((data)=>{
+        console.log("TABLE CREATED -> " + JSON.stringify(data.res));
+      },(error)=>{
+        console.log("ERROR -> " + JSON.stringify(error.err));
+      });
+    }
   }
 }

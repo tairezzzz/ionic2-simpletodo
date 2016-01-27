@@ -1,4 +1,4 @@
-import {Page, NavController} from 'ionic/ionic';
+import {Platform, Page, NavController} from 'ionic/ionic';
 import {AddItemPage} from '../add-item/add-item'
 import {ItemDetailPage} from '../item-detail/item-detail';
 import {DataService} from '../../data/data';
@@ -7,15 +7,25 @@ import {DataService} from '../../data/data';
   templateUrl: 'build/pages/list/list.html'
 })
 export class ListPage {
-  constructor(nav:NavController, dataService: DataService) {
+  constructor(platform: Platform, nav:NavController, dataService: DataService) {
 
     this.nav = nav;
     this.dataService = dataService;
 
     this.items=[];
 
-    this.dataService.getData().then((todos)=>{
-      this.items = JSON.parse(todos) || [];
+    platform.ready().then(()=>{
+      this.dataService.getData().then((data)=>{
+        this.items = [];
+        if(data.res.rows.length>0){
+          for(var i=0; i<data.res.rows.length;i++){
+            this.items.push({title: data.res.rows.item(i).title,
+               description: data.res.rows.item(i).description});
+          }
+        }
+      }, (error)=>{
+        console.log("ERROR -> " + JSON.stringify(error.err));
+      })
     });
   }
 
