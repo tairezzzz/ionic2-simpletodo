@@ -30,7 +30,7 @@ export class ListPage {
   }
 
   addItem(){
-    this.nav.push(AddItemPage,{ListPage:this});
+    this.nav.push(AddItemPage,{listPage:this});
   }
 
   saveItem(item){
